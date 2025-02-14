@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSaChat - Ana Sayfa</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: #f0f2f5;
+            min-height: 100vh;
+        }
+
+        /* Navbar Stili */
+        .navbar {
+            background: linear-gradient(45deg, #6a11cb, #2575fc);
+            padding: 15px;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+        }
+
+        .menu-icon {
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-actions i {
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        /* Drawer Menü */
+        .drawer {
+            position: fixed;
+            left: -280px;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: white;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            transition: 0.3s;
+            z-index: 1001;
+        }
+
+        .drawer.active {
+            left: 0;
+        }
+
+        .drawer-header {
+            padding: 20px;
+            background: linear-gradient(45deg, #6a11cb, #2575fc);
+            color: white;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .profile-image {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #fff;
+        }
+
+        .drawer-menu {
+            padding: 20px 0;
+        }
+
+        .menu-item {
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: #333;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .menu-item:hover {
+            background: #f0f2f5;
+        }
+
+        /* Ana İçerik */
+        .main-content {
+            margin-top: 60px;
+            margin-bottom: 60px;
+            padding: 20px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Gönderi Kartı */
+        .post-card {
+            background: white;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .post-header {
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .post-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #eee;
+        }
+
+        .post-user-info {
+            flex: 1;
+        }
+
+        .post-username {
+            font-weight: 600;
+        }
+
+        .post-time {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .post-content {
+            padding: 0 15px;
+        }
+
+        .post-image {
+            width: 100%;
+            max-height: 400px;
+            object-fit: cover;
+            margin: 10px 0;
+        }
+
+        .post-actions {
+            padding: 15px;
+            display: flex;
+            justify-content: space-around;
+            border-top: 1px solid #eee;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #666;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .action-btn:hover {
+            color: #6a11cb;
+        }
+
+        /* Bottom Navigation Stili */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 12px 0;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+
+        .nav-items {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .nav-item {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #666;
+            text-decoration: none;
+            padding: 8px 20px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item i {
+            font-size: 22px;
+            margin-bottom: 5px;
+            transition: all 0.3s ease;
+            z-index: 2;
+        }
+
+        .nav-item span {
+            font-size: 12px;
+            transition: all 0.3s ease;
+            z-index: 2;
+        }
+
+        /* Aktif menü stili */
+        .nav-item.active {
+            color: #6a11cb;
+            transform: translateY(-2px);
+        }
+
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(106, 17, 203, 0.1), rgba(37, 117, 252, 0.1));
+            border-radius: 12px;
+            z-index: 1;
+        }
+
+        .nav-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 5px;
+            height: 5px;
+            background: #6a11cb;
+            border-radius: 50%;
+            box-shadow: 
+                -10px 0 0 #6a11cb,
+                10px 0 0 #6a11cb;
+            animation: dotPulse 1.5s ease infinite;
+        }
+
+        /* Hover efektleri */
+        .nav-item:hover {
+            color: #6a11cb;
+            transform: translateY(-2px);
+        }
+
+        .nav-item:hover i {
+            transform: scale(1.1);
+        }
+
+        /* İkon animasyonları hover durumunda */
+        .nav-item:hover .fa-home {
+            animation: homeWiggle 0.5s ease;
+        }
+
+        .nav-item:hover .fa-search {
+            animation: searchRotate 0.5s ease;
+        }
+
+        .nav-item:hover .fa-gamepad {
+            animation: gamepadShake 0.5s ease;
+        }
+
+        .nav-item:hover .fa-bell {
+            animation: bellRing 0.5s ease;
+        }
+
+        .nav-item:hover .fa-user {
+            animation: userBounce 0.5s ease;
+        }
+
+        /* Animasyon keyframes */
+        @keyframes dotPulse {
+            0% { opacity: 0.4; }
+            50% { opacity: 1; }
+            100% { opacity: 0.4; }
+        }
+
+        @keyframes homeWiggle {
+            0%, 100% { transform: rotate(0); }
+            25% { transform: rotate(-15deg); }
+            75% { transform: rotate(15deg); }
+        }
+
+        @keyframes searchRotate {
+            0% { transform: rotate(0); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes gamepadShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        @keyframes bellRing {
+            0%, 100% { transform: rotate(0); }
+            25% { transform: rotate(-15deg); }
+            75% { transform: rotate(15deg); }
+        }
+
+        @keyframes userBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        /* Arama Kutusu */
+        .search-container {
+            position: fixed;
+            top: -100px;
+            left: 0;
+            width: 100%;
+            background: white;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease-in-out;
+            z-index: 1002;
+        }
+
+        .search-container.active {
+            top: 70px;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: #f0f2f5;
+            border-radius: 25px;
+            padding: 10px 20px;
+        }
+
+        .search-box input {
+            width: 100%;
+            border: none;
+            background: none;
+            padding: 5px 10px;
+            font-size: 16px;
+        }
+
+        /* Bildirim Popup */
+        .notification-popup {
+            position: fixed;
+            top: 70px;
+            right: -350px;
+            width: 350px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+            transition: all 0.3s ease-in-out;
+            z-index: 1002;
+        }
+
+        .notification-popup.active {
+            right: 10px;
+        }
+
+        .notification-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .notification-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .notification-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid #f0f2f5;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: background 0.3s;
+            cursor: pointer;
+        }
+
+        .notification-item:hover {
+            background: #f8f9fa;
+        }
+
+        .notification-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-text {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .notification-time {
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* Overlay */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            z-index: 1000;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        /* Yeni Gönderi Oluştur Butonu */
+        .create-post-btn {
+            position: fixed;
+            right: 20px;
+            bottom: 80px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(45deg, #6a11cb, #2575fc);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            transition: 0.3s;
+        }
+
+        .create-post-btn:hover {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <i class="fas fa-bars menu-icon" onclick="toggleDrawer()"></i>
+        <div class="logo">WebSaChat</div>
+        <div class="nav-actions">
+            <i class="fas fa-search"></i>
+            <i class="fas fa-bell"></i>
+            <i class="fas fa-envelope"></i>
+        </div>
+    </nav>
+
+    <!-- Drawer Menü -->
+    <div class="drawer" id="drawer">
+        <div class="drawer-header">
+            <div class="user-profile">
+                <img src="profile.jpg" alt="Profil" class="profile-image">
+                <div class="user-info">
+                    <h3>Kullanıcı Adı</h3>
+                    <p>@kullaniciadi</p>
+                </div>
+            </div>
+        </div>
+        <div class="drawer-menu">
+            <a href="#" class="menu-item">
+                <i class="fas fa-user"></i>
+                <span>Profilim</span>
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-gamepad"></i>
+                <span>Mini Oyunlar</span>
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-trophy"></i>
+                <span>Rütbeler</span>
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-tasks"></i>
+                <span>Görevler</span>
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-gift"></i>
+                <span>Hediyeler</span>
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-cog"></i>
+                <span>Ayarlar</span>
+            </a>
+            <a href="login.html" class="menu-item">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Çıkış Yap</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Overlay -->
+    <div class="overlay" id="overlay" onclick="toggleDrawer()"></div>
+
+    <!-- Ana İçerik -->
+    <div class="main-content">
+        <!-- Örnek Gönderi -->
+        <div class="post-card">
+            <div class="post-header">
+                <img src="avatar1.jpg" alt="Avatar" class="post-avatar">
+                <div class="post-user-info">
+                    <div class="post-username">Ahmet Yılmaz</div>
+                    <div class="post-time">2 saat önce</div>
+                </div>
+                <i class="fas fa-ellipsis-h"></i>
+            </div>
+            <div class="post-content">
+                <p>Yeni bir rekor kırdım! 🎮 #MiniOyunlar #Rekor</p>
+                <img src="game-screenshot.jpg" alt="Oyun" class="post-image">
+            </div>
+            <div class="post-actions">
+                <div class="action-btn">
+                    <i class="far fa-heart"></i>
+                    <span>Beğen</span>
+                </div>
+                <div class="action-btn">
+                    <i class="far fa-comment"></i>
+                    <span>Yorum</span>
+                </div>
+                <div class="action-btn">
+                    <i class="far fa-share-square"></i>
+                    <span>Paylaş</span>
+                </div>
+            </div>
+        </div>
+        <!-- Daha fazla gönderi buraya eklenebilir -->
+    </div>
+
+    <!-- Yeni Gönderi Oluştur Butonu -->
+    <div class="create-post-btn">
+        <i class="fas fa-plus"></i>
+    </div>
+
+    <!-- Arama Kutusu -->
+    <div class="search-container" id="searchContainer">
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Ara...">
+        </div>
+    </div>
+
+    <!-- Bildirim Popup -->
+    <div class="notification-popup" id="notificationPopup">
+        <div class="notification-header">
+            <h3>Bildirimler</h3>
+            <i class="fas fa-times" onclick="toggleNotifications()"></i>
+        </div>
+        <div class="notification-list">
+            <div class="notification-item">
+                <img src="avatar1.jpg" alt="Avatar" class="notification-avatar">
+                <div class="notification-content">
+                    <div class="notification-text">
+                        <strong>Ahmet Y.</strong> yeni bir rekor kırdı!
+                    </div>
+                    <div class="notification-time">5 dakika önce</div>
+                </div>
+            </div>
+            <!-- Daha fazla bildirim -->
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <div class="nav-items">
+            <a href="home.html" class="nav-item" data-page="home">
+                <i class="fas fa-home"></i>
+                <span>Ana Sayfa</span>
+            </a>
+            <a href="search.html" class="nav-item" data-page="search">
+                <i class="fas fa-search"></i>
+                <span>Keşfet</span>
+            </a>
+            <a href="games.html" class="nav-item" data-page="games">
+                <i class="fas fa-gamepad"></i>
+                <span>Oyunlar</span>
+            </a>
+            <a href="notifications.html" class="nav-item" data-page="notifications">
+                <i class="fas fa-bell"></i>
+                <span>Bildirimler</span>
+            </a>
+            <a href="profile.html" class="nav-item" data-page="profile">
+                <i class="fas fa-user"></i>
+                <span>Profil</span>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        function toggleDrawer() {
+            document.getElementById('drawer').classList.toggle('active');
+            document.getElementById('overlay').classList.toggle('active');
+        }
+
+        // Scroll kontrolü için değişkenler
+        let lastScroll = 0;
+        const bottomNav = document.getElementById('bottomNav');
+
+        // Scroll olayını dinle
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.pageYOffset;
+            
+            if (currentScroll > lastScroll && currentScroll > 100) {
+                bottomNav.classList.add('hide');
+            } else {
+                bottomNav.classList.remove('hide');
+            }
+            
+            lastScroll = currentScroll;
+        });
+
+        // Arama kutusunu aç/kapat
+        function toggleSearch() {
+            const searchContainer = document.getElementById('searchContainer');
+            searchContainer.classList.toggle('active');
+            
+            if (searchContainer.classList.contains('active')) {
+                searchContainer.querySelector('input').focus();
+            }
+        }
+
+        // Aktif sayfayı belirleme
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPage = window.location.pathname.split('/').pop().split('.')[0];
+            const navItems = document.querySelectorAll('.nav-item');
+            
+            navItems.forEach(item => {
+                const itemPage = item.getAttribute('data-page');
+                if (currentPage === itemPage || (currentPage === '' && itemPage === 'home')) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+        });
+
+        // Bildirimler popup'ı için toggle fonksiyonu
+        function toggleNotifications() {
+            const notificationPopup = document.getElementById('notificationPopup');
+            notificationPopup.classList.toggle('active');
+        }
+    </script>
+</body>
+</html> 

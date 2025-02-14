@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSaChat - Kayıt Ol</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(45deg, #6a11cb, #2575fc);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .register-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 600px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+
+        .logo {
+            text-align: center;
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(45deg, #fff, #64ffda);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 30px;
+        }
+
+        .form-title {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            color: white;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #64ffda;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .form-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .interests-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .interest-tag {
+            padding: 8px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .interest-tag.active {
+            background: #64ffda;
+            color: #2575fc;
+        }
+
+        .avatar-upload {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .avatar-preview {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin: 0 auto 10px;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 40px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .avatar-preview:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: white;
+            color: #6a11cb;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+            color: white;
+        }
+
+        .login-link a {
+            color: #64ffda;
+            text-decoration: none;
+        }
+
+        @media (max-width: 480px) {
+            .register-container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <div class="logo">WebSaChat</div>
+        <h2 class="form-title">Yeni Hesap Oluştur</h2>
+        
+        <form id="registerForm">
+            <div class="avatar-upload">
+                <div class="avatar-preview">
+                    <i class="fas fa-user"></i>
+                </div>
+                <input type="file" id="avatarInput" hidden accept="image/*">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Ad Soyad</label>
+                <input type="text" class="form-input" placeholder="Adınız ve soyadınız" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Kullanıcı Adı</label>
+                <input type="text" class="form-input" placeholder="@kullaniciadi" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">E-posta</label>
+                <input type="email" class="form-input" placeholder="ornek@email.com" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Şifre</label>
+                <input type="password" class="form-input" placeholder="En az 8 karakter" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Doğum Tarihi</label>
+                <input type="date" class="form-input" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">İlgi Alanları</label>
+                <div class="interests-container">
+                    <div class="interest-tag">Oyunlar</div>
+                    <div class="interest-tag">Spor</div>
+                    <div class="interest-tag">Müzik</div>
+                    <div class="interest-tag">Teknoloji</div>
+                    <div class="interest-tag">Sanat</div>
+                    <div class="interest-tag">Seyahat</div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Biyografi</label>
+                <textarea class="form-input" placeholder="Kendinizden bahsedin..." rows="3"></textarea>
+            </div>
+
+            <button type="submit" class="submit-btn">Kayıt Ol</button>
+        </form>
+
+        <div class="login-link">
+            Zaten hesabınız var mı? <a href="login.html">Giriş Yap</a>
+        </div>
+    </div>
+
+    <script>
+        // İlgi alanları seçimi
+        document.querySelectorAll('.interest-tag').forEach(tag => {
+            tag.addEventListener('click', () => {
+                tag.classList.toggle('active');
+            });
+        });
+
+        // Profil fotoğrafı yükleme
+        const avatarPreview = document.querySelector('.avatar-preview');
+        const avatarInput = document.querySelector('#avatarInput');
+
+        avatarPreview.addEventListener('click', () => {
+            avatarInput.click();
+        });
+
+        avatarInput.addEventListener('change', function(e) {
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    avatarPreview.innerHTML = `<img src="${e.target.result}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+                }
+                reader.readAsDataURL(this.files[0]);
+            }
+        });
+    </script>
+</body>
+</html> 

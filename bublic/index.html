@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSaChat - Sosyal Medya Platformu</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(45deg, #6a11cb, #2575fc);
+            min-height: 100vh;
+            color: white;
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+        }
+
+        .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(45deg, #fff, #64ffda);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 10px rgba(100, 255, 218, 0.5); }
+            to { text-shadow: 0 0 20px rgba(100, 255, 218, 0.8); }
+        }
+
+        .nav-buttons button {
+            padding: 10px 25px;
+            margin-left: 15px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .login-btn {
+            background: transparent;
+            border: 2px solid white !important;
+            color: white;
+        }
+
+        .register-btn {
+            background: white;
+            color: #6a11cb;
+        }
+
+        .nav-buttons button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero-section {
+            padding: 150px 20px 80px;
+            background: rgba(255, 255, 255, 0.05);
+            margin: 0 20px;
+            border-radius: 20px;
+            backdrop-filter: blur(5px);
+        }
+
+        .hero-section h1 {
+            font-size: 4em;
+            margin-bottom: 30px;
+            background: linear-gradient(45deg, #fff, #64ffda);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-section p {
+            font-size: 1.5em;
+            margin-bottom: 40px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 40px;
+        }
+
+        .hero-btn {
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-size: 18px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .hero-btn-primary {
+            background: white;
+            color: #6a11cb;
+            border: none;
+        }
+
+        .hero-btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .hero-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .stats-section {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+            margin: 50px 0;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            text-align: center;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #64ffda;
+        }
+
+        .stat-label {
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 10px;
+        }
+
+        .features-grid {
+            padding: 80px 20px;
+        }
+
+        .feature-card {
+            position: relative;
+            overflow: hidden;
+            padding: 40px;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+            transform: translateY(100%);
+            transition: transform 0.3s;
+        }
+
+        .feature-card:hover::before {
+            transform: translateY(0);
+        }
+
+        .testimonials {
+            padding: 80px 20px;
+            text-align: center;
+        }
+
+        .testimonial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .testimonial-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(5px);
+        }
+
+        .testimonial-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            border: 3px solid #64ffda;
+        }
+
+        .footer {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 50px 20px;
+            margin-top: 80px;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+        }
+
+        .footer-section h4 {
+            color: #64ffda;
+            margin-bottom: 20px;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: #64ffda;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-content">
+            <div class="logo">WebSaChat</div>
+            <div class="nav-buttons">
+                <button class="login-btn" onclick="window.location.href='login.html'">Giriş Yap</button>
+                <button class="register-btn" onclick="window.location.href='register.html'">Kayıt Ol</button>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero-section">
+        <h1>Sosyal Medyanın Yeni Nesli</h1>
+        <p>Oyunlar, sohbetler ve daha fazlası tek bir platformda!</p>
+        <div class="hero-buttons">
+            <button class="hero-btn hero-btn-primary">Ücretsiz Başla</button>
+            <button class="hero-btn hero-btn-secondary">Daha Fazla Bilgi</button>
+        </div>
+    </section>
+
+    <div class="stats-section">
+        <div class="stat-item">
+            <div class="stat-number">1M+</div>
+            <div class="stat-label">Aktif Kullanıcı</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">50+</div>
+            <div class="stat-label">Mini Oyun</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">24/7</div>
+            <div class="stat-label">Canlı Destek</div>
+        </div>
+    </div>
+
+    <div class="features-grid">
+        <div class="feature-card">
+            <i class="fas fa-users feature-icon"></i>
+            <h3 class="feature-title">Sosyal Etkileşim</h3>
+            <p>Arkadaşlarınızla bağlantı kurun, paylaşın ve etkileşimde bulunun</p>
+        </div>
+        <div class="feature-card">
+            <i class="fas fa-gamepad feature-icon"></i>
+            <h3 class="feature-title">Mini Oyunlar</h3>
+            <p>Eğlenceli mini oyunlarla puan kazanın ve rütbenizi yükseltin</p>
+        </div>
+        <div class="feature-card">
+            <i class="fas fa-video feature-icon"></i>
+            <h3 class="feature-title">Video Sohbet</h3>
+            <p>6 kişiye kadar grup görüşmeleri yapın</p>
+        </div>
+    </div>
+
+    <section class="testimonials">
+        <h2>Kullanıcılarımız Ne Diyor?</h2>
+        <div class="testimonial-grid">
+            <div class="testimonial-card">
+                <img src="avatar1.jpg" alt="Kullanıcı" class="testimonial-avatar">
+                <h4>Ahmet Y.</h4>
+                <p>"Mini oyunlar ve rütbe sistemi gerçekten bağımlılık yapıyor!"</p>
+            </div>
+            <div class="testimonial-card">
+                <img src="avatar2.jpg" alt="Kullanıcı" class="testimonial-avatar">
+                <h4>Ayşe K.</h4>
+                <p>"Arkadaşlarımla video sohbet özelliğini çok seviyorum."</p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>Hakkımızda</h4>
+                <ul class="footer-links">
+                    <li><a href="#">Şirketimiz</a></li>
+                    <li><a href="#">Kariyer</a></li>
+                    <li><a href="#">İletişim</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Özellikler</h4>
+                <ul class="footer-links">
+                    <li><a href="#">Mini Oyunlar</a></li>
+                    <li><a href="#">Video Sohbet</a></li>
+                    <li><a href="#">Rütbe Sistemi</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Destek</h4>
+                <ul class="footer-links">
+                    <li><a href="#">SSS</a></li>
+                    <li><a href="#">Yardım Merkezi</a></li>
+                    <li><a href="#">Güvenlik</a></li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

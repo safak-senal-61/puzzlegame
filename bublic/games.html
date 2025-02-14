@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSaChat - Oyunlar</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: #1a1b2e;
+            min-height: 100vh;
+            color: #fff;
+        }
+
+        /* Oyunlar Başlığı */
+        .games-header {
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            padding: 30px 20px;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            text-align: center;
+            box-shadow: 0 5px 25px rgba(106, 17, 203, 0.3);
+        }
+
+        .games-header h2 {
+            font-size: 28px;
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .games-header p {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* Oyun Kategorileri */
+        .game-categories {
+            margin-top: 120px;
+            padding: 20px;
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+        }
+
+        .game-category {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 12px 25px;
+            border-radius: 20px;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .game-category.active {
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(106, 17, 203, 0.3);
+        }
+
+        /* Oyun Grid */
+        .games-grid {
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 80px;
+        }
+
+        .game-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+        }
+
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(106, 17, 203, 0.2), rgba(37, 117, 252, 0.2));
+            opacity: 0;
+            transition: 0.3s;
+        }
+
+        .game-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 15px 30px rgba(106, 17, 203, 0.3);
+        }
+
+        .game-card:hover::before {
+            opacity: 1;
+        }
+
+        .game-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+
+        .game-info {
+            padding: 20px;
+            position: relative;
+        }
+
+        .game-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .game-description {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        .game-stats {
+            display: flex;
+            justify-content: space-between;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .game-stat {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 13px;
+        }
+
+        .game-stat i {
+            color: #6a11cb;
+        }
+
+        /* Animasyonlu Arka Plan */
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.1;
+            background: 
+                radial-gradient(circle at 10% 20%, rgba(106, 17, 203, 0.4) 0%, transparent 50%),
+                radial-gradient(circle at 90% 80%, rgba(37, 117, 252, 0.4) 0%, transparent 50%);
+            animation: bgPulse 10s infinite alternate;
+        }
+
+        @keyframes bgPulse {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="animated-bg"></div>
+    
+    <div class="games-header">
+        <h2>Oyun Merkezi</h2>
+        <p>En popüler oyunları keşfet ve arkadaşlarınla yarış!</p>
+    </div>
+
+    <div class="game-categories">
+        <div class="game-category active">Tümü</div>
+        <div class="game-category">Bulmaca</div>
+        <div class="game-category">Kelime</div>
+        <div class="game-category">Matematik</div>
+        <div class="game-category">Hafıza</div>
+        <div class="game-category">Quiz</div>
+    </div>
+
+    <div class="games-grid">
+        <!-- Kelime Bulmaca -->
+        <div class="game-card" onclick="window.location.href='games/word-puzzle.html'">
+            <img src="word-puzzle.jpg" alt="Kelime Bulmaca" class="game-image">
+            <div class="game-info">
+                <h3 class="game-title">Kelime Bulmaca</h3>
+                <p class="game-description">Kelimeleri bul ve puanları topla!</p>
+                <div class="game-stats">
+                    <div class="game-stat">
+                        <i class="fas fa-users"></i>
+                        <span>1.2K Oyuncu</span>
+                    </div>
+                    <div class="game-stat">
+                        <i class="fas fa-star"></i>
+                        <span>4.8</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hafıza Kartları -->
+        <div class="game-card" onclick="window.location.href='games/memory-cards.html'">
+            <img src="memory-game.jpg" alt="Hafıza Kartları" class="game-image">
+            <div class="game-info">
+                <h3 class="game-title">Hafıza Kartları</h3>
+                <p class="game-description">Eşleştirmeleri bul ve hafızanı test et!</p>
+                <div class="game-stats">
+                    <div class="game-stat">
+                        <i class="fas fa-users"></i>
+                        <span>950 Oyuncu</span>
+                    </div>
+                    <div class="game-stat">
+                        <i class="fas fa-star"></i>
+                        <span>4.6</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Matematik Oyunu -->
+        <div class="game-card" onclick="window.location.href='games/math-puzzle.html'">
+            <img src="math-game.jpg" alt="Matematik Oyunu" class="game-image">
+            <div class="game-info">
+                <h3 class="game-title">Matematik Ustası</h3>
+                <p class="game-description">Hızlı matematik çözümleri!</p>
+                <div class="game-stats">
+                    <div class="game-stat">
+                        <i class="fas fa-users"></i>
+                        <span>800 Oyuncu</span>
+                    </div>
+                    <div class="game-stat">
+                        <i class="fas fa-star"></i>
+                        <span>4.5</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <!-- Önceki bottom navigation kodu buraya eklenecek -->
+    </div>
+
+    <script>
+        // Kategori seçimi için
+        document.querySelectorAll('.game-category').forEach(category => {
+            category.addEventListener('click', () => {
+                document.querySelectorAll('.game-category').forEach(c => c.classList.remove('active'));
+                category.classList.add('active');
+                // Burada kategoriye göre oyunları filtreleme yapılabilir
+            });
+        });
+    </script>
+</body>
+</html> 

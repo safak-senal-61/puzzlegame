@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hafıza Kartları - WebSaChat</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: #1a1b2e;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #fff;
+        }
+
+        .game-header {
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            width: 100%;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .game-stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 20px 0;
+            font-size: 18px;
+        }
+
+        .stat {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 15px;
+            backdrop-filter: blur(5px);
+        }
+
+        .memory-game {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            perspective: 1000px;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .memory-card {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            cursor: pointer;
+            transform-style: preserve-3d;
+            transform: scale(1);
+            transition: transform 0.5s;
+        }
+
+        .memory-card.flip {
+            transform: rotateY(180deg);
+        }
+
+        .memory-card.matched {
+            transform: rotateY(180deg);
+            pointer-events: none;
+            border: 3px solid #2ecc71;
+            box-shadow: 0 0 20px rgba(46, 204, 113, 0.8);
+        }
+
+        .memory-card.matched .front-face {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            font-size: 45px;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .memory-card:not(.matched) {
+            opacity: 0.9;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .memory-card:not(.matched):hover {
+            transform: scale(1.05);
+            opacity: 1;
+        }
+
+        .memory-card:not(.matched) .front-face {
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            font-size: 40px;
+        }
+
+        .memory-card.matched::after {
+            content: '✓';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 30px;
+            height: 30px;
+            background: #2ecc71;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            border: 2px solid white;
+            z-index: 10;
+        }
+
+        .front-face, .back-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            padding: 20px;
+            border-radius: 15px;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .front-face {
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            transform: rotateY(180deg);
+        }
+
+        .back-face {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .restart-btn {
+            margin-top: 30px;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .restart-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(106, 17, 203, 0.3);
+        }
+
+        .win-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px 50px;
+            border-radius: 20px;
+            text-align: center;
+            color: #333;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .win-message.show {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: #f00;
+            animation: confetti 5s ease-in-out infinite;
+        }
+
+        @keyframes confetti {
+            0% { transform: translateY(0) rotateZ(0); opacity: 1; }
+            100% { transform: translateY(100vh) rotateZ(720deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-header">
+        <h1>Hafıza Kartları</h1>
+        <div class="game-stats">
+            <div class="stat">Hamle: <span id="moves">0</span></div>
+            <div class="stat">Süre: <span id="timer">0:00</span></div>
+        </div>
+    </div>
+
+    <div class="memory-game" id="memoryGame"></div>
+    
+    <button class="restart-btn" onclick="restartGame()">Yeniden Başlat</button>
+
+    <div class="win-message" id="winMessage">
+        <h2>Tebrikler! 🎉</h2>
+        <p>Oyunu tamamladınız!</p>
+        <p>Hamle Sayısı: <span id="finalMoves">0</span></p>
+        <p>Süre: <span id="finalTime">0:00</span></p>
+        <button class="restart-btn" onclick="restartGame()">Tekrar Oyna</button>
+    </div>
+
+    <script>
+        const emojis = ['🎮', '🎲', '🎯', '🎨', '🎭', '🎪', '🎢', '🎡'];
+        const gameCards = [...emojis, ...emojis];
+        let flippedCards = [];
+        let matchedPairs = 0;
+        let moves = 0;
+        let timer = 0;
+        let timerInterval;
+        let isPlaying = false;
+
+        function createCard(emoji, index) {
+            const card = document.createElement('div');
+            card.className = 'memory-card';
+            card.setAttribute('data-index', index);
+            
+            card.innerHTML = `
+                <div class="front-face">${emoji}</div>
+                <div class="back-face">?</div>
+            `;
+            
+            card.addEventListener('click', flipCard);
+            return card;
+        }
+
+        function shuffleCards() {
+            for (let i = gameCards.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [gameCards[i], gameCards[j]] = [gameCards[j], gameCards[i]];
+            }
+        }
+
+        function initializeGame() {
+            const gameBoard = document.getElementById('memoryGame');
+            gameBoard.innerHTML = '';
+            shuffleCards();
+            
+            gameCards.forEach((emoji, index) => {
+                gameBoard.appendChild(createCard(emoji, index));
+            });
+        }
+
+        function flipCard() {
+            if (!isPlaying) startGame();
+            
+            if (flippedCards.length === 2 || this.classList.contains('flip') || this.classList.contains('matched')) return;
+            
+            this.classList.add('flip');
+            flippedCards.push(this);
+
+            if (flippedCards.length === 2) {
+                moves++;
+                document.getElementById('moves').textContent = moves;
+                checkForMatch();
+            }
+        }
+
+        function checkForMatch() {
+            const [card1, card2] = flippedCards;
+            const match = gameCards[card1.dataset.index] === gameCards[card2.dataset.index];
+
+            if (match) {
+                card1.classList.add('matched');
+                card2.classList.add('matched');
+                card1.classList.add('flip');
+                card2.classList.add('flip');
+                card1.style.pointerEvents = 'none';
+                card2.style.pointerEvents = 'none';
+                matchedPairs++;
+                
+                if (matchedPairs === emojis.length) {
+                    endGame();
+                }
+            } else {
+                setTimeout(() => {
+                    card1.classList.remove('flip');
+                    card2.classList.remove('flip');
+                }, 1000);
+            }
+            
+            setTimeout(() => {
+                flippedCards = [];
+            }, 1000);
+        }
+
+        function startGame() {
+            isPlaying = true;
+            timerInterval = setInterval(() => {
+                timer++;
+                updateTimer();
+            }, 1000);
+        }
+
+        function updateTimer() {
+            const minutes = Math.floor(timer / 60);
+            const seconds = timer % 60;
+            const timeString = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            document.getElementById('timer').textContent = timeString;
+        }
+
+        function endGame() {
+            clearInterval(timerInterval);
+            document.getElementById('finalMoves').textContent = moves;
+            document.getElementById('finalTime').textContent = document.getElementById('timer').textContent;
+            document.getElementById('winMessage').classList.add('show');
+            createConfetti();
+        }
+
+        function createConfetti() {
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.animationDelay = Math.random() * 3 + 's';
+                confetti.style.background = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                document.body.appendChild(confetti);
+                
+                setTimeout(() => confetti.remove(), 5000);
+            }
+        }
+
+        function restartGame() {
+            document.getElementById('winMessage').classList.remove('show');
+            const cards = document.querySelectorAll('.memory-card');
+            cards.forEach(card => {
+                if (!card.classList.contains('matched')) {
+                    card.classList.remove('flip');
+                    card.style.pointerEvents = 'auto';
+                }
+            });
+            matchedPairs = 0;
+            moves = 0;
+            timer = 0;
+            isPlaying = false;
+            document.getElementById('moves').textContent = '0';
+            document.getElementById('timer').textContent = '0:00';
+            clearInterval(timerInterval);
+            initializeGame();
+        }
+
+        // Oyunu başlat
+        initializeGame();
+    </script>
+</body>
+</html> 
