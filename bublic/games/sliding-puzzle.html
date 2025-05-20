@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sliding Puzzle - WebSaChat</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #1a1b2e; /* Dark theme background */
+            color: white; /* White text color */
+        }
+        .game-container {
+            background-color: rgba(255, 255, 255, 0.1); /* Semi-transparent white */
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.25);
+            text-align: center;
+            width: auto;
+            max-width: 400px; /* Max width for the container */
+        }
+        h1 {
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+        }
+        .game-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            font-size: 1em;
+        }
+        .stat { /* Class for individual stat elements like moves and timer */
+            background-color: rgba(255, 255, 255, 0.05);
+            padding: 8px 15px;
+            border-radius: 6px;
+        }
+        #puzzle-board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px); /* For a 3x3 grid */
+            grid-template-rows: repeat(3, 100px);    /* For a 3x3 grid */
+            gap: 5px;
+            width: 310px;  /* (100px * 3 columns) + (5px * 2 gaps) */
+            height: 310px; /* (100px * 3 rows) + (5px * 2 gaps) */
+            background-color: rgba(0,0,0,0.2);
+            padding: 5px; /* Padding around the grid cells */
+            border-radius: 8px;
+            margin: 25px auto; /* Centering the board */
+            position: relative; /* For positioning pieces or effects if needed later */
+        }
+        .puzzle-piece {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8em; /* Larger font for numbers */
+            font-weight: 600;
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease; /* Added transform transition */
+        }
+        .puzzle-piece:hover {
+             /* Add a subtle hover effect, maybe a slight scale or brightness change if not empty */
+        }
+        .puzzle-piece.empty {
+            background: transparent;
+            cursor: default;
+            border: 1px dashed #555; /* Dashed border for empty slot */
+            box-sizing: border-box; /* Ensure border doesn't add to size */
+        }
+        #restart-btn {
+            padding: 12px 25px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: block; /* Make it a block to use margin auto for centering */
+            margin: 25px auto 0; /* Margin top, auto for left/right */
+            font-size: 1.1em;
+            font-weight: 600;
+            transition: transform 0.2s ease;
+        }
+        #restart-btn:hover {
+            transform: scale(1.05); /* Slight scale effect on hover */
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>Sliding Puzzle</h1>
+        <div class="game-stats">
+            <div class="stat">Moves: <span id="moves">0</span></div>
+            <div class="stat">Timer: <span id="timer">0s</span></div>
+        </div>
+        <div id="puzzle-board">
+            <!-- Puzzle pieces will be generated here by JavaScript -->
+        </div>
+        <button id="restart-btn">Restart Game</button>
+    </div>
+    <script>
+        const boardSize = 3;
+        const puzzleBoard = document.getElementById('puzzle-board');
+        const movesDisplay = document.getElementById('moves');
+        const timerDisplay = document.getElementById('timer');
+        const restartBtn = document.getElementById('restart-btn');
+
+        let tiles = [];
+        let emptyTilePos = { row: 0, col: 0 };
+        let moves = 0;
+        let timer = 0;
+        let timerInterval;
+        let isPlaying = false;
+
+        function init() {
+            moves = 0;
+            timer = 0;
+            isPlaying = false;
+            clearInterval(timerInterval);
+            movesDisplay.textContent = moves;
+            updateTimerDisplay(); // Initialize timer display to 00:00 or 0s
+
+            createTiles();
+            shuffleTiles(); // This needs to ensure solvability
+            renderBoard();
+
+            // Ensure event listener is only added once, or it's safe to re-add
+            restartBtn.removeEventListener('click', init); // Remove previous if any
+            restartBtn.addEventListener('click', init);
+        }
+
+        function createTiles() {
+            tiles = [];
+            const totalTiles = boardSize * boardSize;
+            for (let i = 1; i < totalTiles; i++) {
+                tiles.push(i);
+            }
+            tiles.push(null); // Represents the empty tile
+            emptyTilePos = { row: boardSize - 1, col: boardSize - 1 }; // Initial empty pos
+        }
+
+        function shuffleTiles() {
+            // Fisher-Yates Shuffle
+            for (let i = tiles.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [tiles[i], tiles[j]] = [tiles[j], tiles[i]];
+            }
+
+            // Check solvability for an N x N grid
+            // If grid width is odd (like 3x3), inversions must be even.
+            // If grid width is even, inversions + row of empty (from bottom, 0-indexed) must be odd.
+            // Our empty tile will be placed by renderBoard, so we track it by its 'null' value.
+            
+            let inversions = 0;
+            const flatTiles = tiles.filter(t => t !== null); // Exclude empty tile for inversion count
+            for (let i = 0; i < flatTiles.length; i++) {
+                for (let j = i + 1; j < flatTiles.length; j++) {
+                    if (flatTiles[i] > flatTiles[j]) {
+                        inversions++;
+                    }
+                }
+            }
+
+            if (boardSize % 2 === 1) { // Odd grid (e.g., 3x3, 5x5)
+                if (inversions % 2 !== 0) { // If inversions are odd, make them even
+                    // Swap two adjacent non-null tiles to change inversion count by 1
+                    if (tiles[0] !== null && tiles[1] !== null) {
+                        [tiles[0], tiles[1]] = [tiles[1], tiles[0]];
+                    } else { // if first two are null, try second and third
+                         [tiles[1], tiles[2]] = [tiles[2], tiles[1]];
+                    }
+                }
+            } else { // Even grid (e.g., 2x2, 4x4)
+                // Find empty tile row from bottom (0-indexed)
+                let emptyRowFromBottom = 0;
+                for(let i=0; i < tiles.length; i++) {
+                    if (tiles[i] === null) {
+                        emptyRowFromBottom = boardSize - 1 - Math.floor(i / boardSize);
+                        break;
+                    }
+                }
+                if ((inversions + emptyRowFromBottom) % 2 === 0) { // If sum is even, make it odd
+                     if (tiles[0] !== null && tiles[1] !== null) {
+                        [tiles[0], tiles[1]] = [tiles[1], tiles[0]];
+                    } else {
+                         [tiles[1], tiles[2]] = [tiles[2], tiles[1]];
+                    }
+                }
+            }
+             // After shuffling and ensuring solvability, find the actual empty tile position
+            const emptyIdx = tiles.indexOf(null);
+            emptyTilePos = { row: Math.floor(emptyIdx / boardSize), col: emptyIdx % boardSize };
+        }
+
+
+        function renderBoard() {
+            puzzleBoard.innerHTML = '';
+            const emptyIdx = tiles.indexOf(null);
+            emptyTilePos = { row: Math.floor(emptyIdx / boardSize), col: emptyIdx % boardSize };
+
+            for (let i = 0; i < tiles.length; i++) {
+                const tileValue = tiles[i];
+                const piece = document.createElement('div');
+                piece.classList.add('puzzle-piece');
+                
+                const row = Math.floor(i / boardSize);
+                const col = i % boardSize;
+                piece.dataset.row = row;
+                piece.dataset.col = col;
+
+                if (tileValue === null) {
+                    piece.classList.add('empty');
+                    piece.textContent = '';
+                } else {
+                    piece.textContent = tileValue;
+                    piece.addEventListener('click', handleTileClick);
+                }
+                puzzleBoard.appendChild(piece);
+            }
+        }
+
+        function handleTileClick(event) {
+            if (!isPlaying) {
+                startGameTimer();
+            }
+
+            const clickedRow = parseInt(event.target.dataset.row);
+            const clickedCol = parseInt(event.target.dataset.col);
+
+            // Check if the clicked tile is adjacent to the empty tile
+            const R_diff = Math.abs(clickedRow - emptyTilePos.row);
+            const C_diff = Math.abs(clickedCol - emptyTilePos.col);
+
+            if ((R_diff === 1 && C_diff === 0) || (R_diff === 0 && C_diff === 1)) {
+                // Swap
+                const clickedIdx = clickedRow * boardSize + clickedCol;
+                const emptyIdx = emptyTilePos.row * boardSize + emptyTilePos.col;
+                
+                [tiles[clickedIdx], tiles[emptyIdx]] = [tiles[emptyIdx], tiles[clickedIdx]];
+                
+                // Update emptyTilePos (though renderBoard will also do this)
+                emptyTilePos = { row: clickedRow, col: clickedCol };
+                
+                moves++;
+                movesDisplay.textContent = moves;
+                
+                renderBoard(); // Re-render the board
+                checkWinCondition();
+            }
+        }
+
+        function startGameTimer() {
+            if (isPlaying) return; // Prevent multiple intervals
+            isPlaying = true;
+            timerInterval = setInterval(() => {
+                timer++;
+                updateTimerDisplay();
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timer / 60);
+            const seconds = timer % 60;
+            timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            if (timer === 0 && minutes === 0 && seconds === 0) { // Initial display before timer starts
+                 timerDisplay.textContent = "0s";
+            }
+        }
+        
+        function checkWinCondition() {
+            for (let i = 0; i < tiles.length - 1; i++) {
+                if (tiles[i] !== i + 1) {
+                    return false; // Not in order
+                }
+            }
+            // Last tile should be null (empty)
+            if (tiles[tiles.length - 1] === null) {
+                clearInterval(timerInterval);
+                isPlaying = false;
+                // Use a more subtle way to show win message if alert is too intrusive.
+                // For now, alert is fine as per spec.
+                setTimeout(() => { // Timeout to allow board to re-render before alert
+                    alert(`Congratulations! You won in ${moves} moves and ${timerDisplay.textContent} time!`);
+                }, 100); 
+                // Optionally: puzzleBoard.classList.add('game-won'); // Style the board on win
+                return true;
+            }
+            return false;
+        }
+
+        // Initial call to set up the game
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
